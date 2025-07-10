@@ -1,0 +1,100 @@
+[project]
+name = "rvt2json"
+version = "0.1.0"
+description = "Moderner Revit Familie XML Extractor - Konvertiert .rfa Dateien zu JSON"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "click>=8.2.1",
+    "rich>=13.0.0",
+    "typer>=0.9.0",
+    "matplotlib>=3.8.0",
+    "pandas>=2.1.0",
+    "seaborn>=0.13.0",
+    "pydantic>=2.11.7",
+]
+
+[dependency-groups]
+dev = [
+    "debugpy>=1.8.14",
+    "pyright>=1.1.403",
+    "ruff>=0.12.2",
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "pytest-mock>=3.10.0",
+    "isort>=6.0.1",
+]
+
+[project.scripts]
+rvt2json = "cli:main"
+
+
+[tool.pyright]
+include = ["*.py"]
+exclude = ["**/__pycache__"]
+reportMissingImports = true
+reportMissingTypeStubs = false
+pythonVersion = "3.13"
+
+[tool.ruff]
+line-length = 110
+target-version = "py313"
+
+select = [
+    "A",
+    # "AIR",
+    # "ARG",
+    "B",
+    # "BLE",
+    "C4",
+    # "C90",
+    # "COM",
+    # "DTZ",
+    # "E",
+    # "EM",
+    # "ERA",
+    # "EXE",
+    "F",
+    # "FA",
+    # "FBT",
+    # "FLY",
+    # "FURB",
+    "G",
+    "I",
+    # "ICN",
+    # "INP",
+    # "INT",
+    # "ISC",
+    # "LOG",
+    "N",
+    # "NPY",
+    # "PD",
+    # "PERF",
+    # "PGH",
+    # "PIE",
+    # "PL",
+    # "PT",
+    # "PTH",
+    # "PYI",
+    "Q",
+    "RET",
+    "RSE",
+    # "RUF",
+    # "S",
+    # "SIM",
+    # "SLF",
+    # "SLOT",
+    # "T10",
+    # "T20",
+    # "TCH",
+    # "TID",
+    # "TRY",
+    "UP",
+    "W",
+    "YTT",
+]
+ignore = ["S101", "T201", "T203"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
