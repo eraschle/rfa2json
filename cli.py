@@ -8,23 +8,18 @@ from datetime import datetime
 from pathlib import Path
 
 import typer
-from json_repository import RevitFamilyJSONRepository
 from rich import box
 from rich.align import Align
 from rich.console import Console
 from rich.logging import RichHandler
 from rich.panel import Panel
-from rich.progress import (
-    BarColumn,
-    Progress,
-    SpinnerColumn,
-    TaskProgressColumn,
-    TextColumn,
-)
+from rich.progress import BarColumn, Progress, SpinnerColumn, TaskProgressColumn, TextColumn
 from rich.table import Table
 from rich.text import Text
 from rich.tree import Tree
 
+from rfa2json.extract.xml_reader import RevitFamilyXMLReader
+from rfa2json.repo.json_repo import RevitFamilyJSONRepository
 from rfa2json.service import RevitFamilyService
 
 # Rich Console Setup
@@ -41,22 +36,22 @@ def setup_logging(verbose: bool = False, log_file: Path | None = None) -> None:
     """Konfiguriert Logging mit Rich Handler."""
     level = logging.DEBUG if verbose else logging.INFO
 
-    handlers = [RichHandler(console=console, rich_tracebacks=True)]
+    # handlers = [RichHandler(console=console, rich_tracebacks=True)]
 
-    if log_file:
-        log_file.parent.mkdir(parents=True, exist_ok=True)
-        file_handler = logging.FileHandler(log_file, encoding="utf-8")
-        file_handler.setFormatter(
-            logging.Formatter("%(asctime)s - %(levelname)s - %(message)s"),
-        )
-        handlers.append(file_handler)
+    # if log_file:
+    #     log_file.parent.mkdir(parents=True, exist_ok=True)
+    #     file_handler = logging.FileHandler(log_file, encoding="utf-8")
+    #     file_handler.setFormatter(
+    #         logging.Formatter("%(asctime)s - %(levelname)s - %(message)s"),
+    #     )
+    #     handlers.append(file_handler)
 
-    logging.basicConfig(
-        level=level,
-        format="%(message)s",
-        datefmt="[%X]",
-        handlers=handlers,
-    )
+    # logging.basicConfig(
+    #     level=level,
+    #     format="%(message)s",
+    #     datefmt="[%X]",
+    #     handlers=handlers,
+    # )
 
 
 logger = logging.getLogger(__name__)
@@ -297,7 +292,7 @@ def determine_output_path(
 
 def check_for_new_elements(entry, stats: ProcessingStats) -> None:
     """Prüft auf neue XML-Elemente, die Code-Updates erfordern könnten."""
-    from config import KNOWN_PARAMETER_TYPES, KNOWN_TYPE_OF_PARAMETERS
+    from rfa2json.config import KNOWN_PARAMETER_TYPES, KNOWN_TYPE_OF_PARAMETERS
 
     # Prüfe Features
     for feature in entry.features:
@@ -356,11 +351,6 @@ def extract_families(
         "--log-file",
         help="📝 Pfad zur Log-Datei",
     ),
-    include_backups: bool = typer.Option(
-        False,
-        "--include-backups",
-        help="🔄 Verarbeitet auch Backup-Dateien (.0001.rfa, etc.)",
-    ),
 ):
     """
     🚀 Extrahiert XML-Daten aus Revit Familie (.rfa) Dateien zu JSON.
@@ -385,10 +375,9 @@ def extract_families(
 
     # Sammle Dateien
     with console.status("[bold green]🔍 Suche nach .rfa Dateien..."):
-        rfa_files = collect_rfa_files_with_backup_filter(
+        rfa_files = collect_rfa_files(
             input_path,
             recursive,
-            include_backups,
         )
 
     if not rfa_files:
@@ -505,7 +494,8 @@ def extract_families(
 
     # Log Zusammenfassung
     logger.info(
-        f"Verarbeitung abgeschlossen: {stats.processed} erfolgreich, {stats.failed} fehlgeschlagen, {stats.skipped} übersprungen",
+        f"Verarbeitung abgeschlossen: {stats.processed} "
+        f"erfolgreich, {stats.failed} fehlgeschlagen, {stats.skipped} übersprungen",
     )
 
     # Exit Code
@@ -584,9 +574,9 @@ def show_info(json_file: Path = typer.Argument(..., help="📄 JSON-Datei zum An
 
             console.print(features_table)
 
-    except Exception as e:
-        console.print(f"❌ [red]Fehler beim Laden:[/red] {e}")
-        raise typer.Exit(1)
+    except Exception as err:
+        console.print(f"❌ [red]Fehler beim Laden:[/red] {err}")
+        raise typer.Exit(1) from err
 
 
 @app.command("validate")
@@ -727,7 +717,7 @@ def analyze_families(
         raise typer.Exit(1)
 
     # Analyzer initialisieren und Daten laden
-    from analyzer import FamilyDataAnalyzer
+    from rfa2json.analyzer import FamilyDataAnalyzer
 
     analyzer = FamilyDataAnalyzer()
 
@@ -782,9 +772,9 @@ def analyze_families(
                 if len(result_df) > 10:
                     console.print(f"... und {len(result_df) - 10} weitere Ergebnisse")
 
-        except Exception as e:
-            console.print(f"❌ [red]Fehler bei Query:[/red] {e}")
-            raise typer.Exit(1)
+        except Exception as err:
+            console.print(f"❌ [red]Fehler bei Query:[/red] {err}")
+            raise typer.Exit(1) from err
 
     # Diagramme erstellen
     if output:
@@ -808,9 +798,9 @@ def analyze_families(
                 )
                 raise typer.Exit(1)
 
-        except Exception as e:
-            console.print(f"❌ [red]Fehler beim Erstellen der Diagramme:[/red] {e}")
-            raise typer.Exit(1)
+        except Exception as err:
+            console.print(f"❌ [red]Fehler beim Erstellen der Diagramme:[/red] {err}")
+            raise typer.Exit(1) from err
 
     console.print("\n🎉 [green]Analyse abgeschlossen![/green]")
 

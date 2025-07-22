@@ -93,7 +93,7 @@ select = [
     "W",
     "YTT",
 ]
-ignore = ["S101", "T201", "T203"]
+ignore = ["S101", "T201", "T203", "G004"]
 
 [tool.ruff.format]
 quote-style = "double"

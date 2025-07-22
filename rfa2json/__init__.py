@@ -13,7 +13,7 @@ from .config import (
     KNOWN_TAXONOMY_TERMS,
     KNOWN_TYPE_OF_PARAMETERS,
 )
-from .json_repository import RevitFamilyJSONRepository
+from .repo.json_repo import RevitFamilyJSONRepository
 from .models import (
     Category,
     DesignFile,
@@ -26,9 +26,10 @@ from .models import (
     RevitFamilyEntry,
     Taxonomy,
 )
-from .protocols import RevitFamilyReader, RevitFamilyRepository
+from .extract import RevitFamilyReader
+from .repo import RevitFamilyRepository
 from .service import RevitFamilyService
-from .xml_reader import RevitFamilyXMLReader
+from .extract.xml_reader import RevitFamilyXMLReader
 
 __all__ = [
     "KNOWN_NAMESPACES",

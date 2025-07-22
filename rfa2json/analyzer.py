@@ -10,11 +10,11 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
-from models import RevitFamilyEntry
+from .models import RevitFamilyEntry
 from rich import box
 from rich.console import Console
 from rich.table import Table
-from service import RevitFamilyService
+from .service import RevitFamilyService
 
 logger = logging.getLogger(__name__)
 console = Console()

@@ -1,9 +1,10 @@
 from pathlib import Path
 
-from json_repository import RevitFamilyJSONRepository
-from models import RevitFamilyEntry
-from protocols import RevitFamilyReader, RevitFamilyRepository
-from xml_reader import RevitFamilyXMLReader
+from .repo.json_repo import RevitFamilyJSONRepository
+from .models import RevitFamilyEntry
+from .extract import RevitFamilyReader
+from .repo import RevitFamilyRepository
+from .extract.xml_reader import RevitFamilyXMLReader
 
 
 class RevitFamilyService:

@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Protocol, runtime_checkable
 
-from models import RevitFamilyEntry
+from ..models import RevitFamilyEntry
 
 
 @runtime_checkable
